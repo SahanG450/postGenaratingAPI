@@ -16,17 +16,17 @@ class PostGenerator {
 
     // Configuration for text positions (customize based on your template)
     this.config = {
-      sportPosition: { x: 250, y: 50 }, // Sport name position
-      sportFontSize: 48,
-      sportColor: "#0e1fe1ff",
+      sportPosition: { x: 430, y: 460 }, // Sport name position
+      sportFontSize: 64,
+      sportColor: "#c7c7c7ff",
       // fit the positions
       facultyPositions: [
-        { x: 150, y: 340 },
-        { x: 250, y: 420 },
-        { x: 150, y: 500 },
+        { x: 335, y: 640 },
+        { x: 335, y: 860 },
+        { x: 335, y: 1070 },
       ],
       facultyFontSize: 32,
-      facultyColor: "#b30808ff",
+      facultyColor: "#ebeaeaff",
 
       ...config,
     };
@@ -138,8 +138,9 @@ class PostGenerator {
           .sport-text { 
             fill: ${this.config.sportColor}; 
             font-size: ${this.config.sportFontSize}px; 
-            font-weight: bold; 
-            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-weight: 600px;
+            font-family: istok Web;
           }
         </style>
         <text x="${this.config.sportPosition.x}" y="${
@@ -158,18 +159,18 @@ class PostGenerator {
     faculties.forEach((faculty, index) => {
       if (index < this.config.facultyPositions.length) {
         const position = this.config.facultyPositions[index];
-        const placeLabel = placeLabels[index] || `${index + 1}th Place`;
-
         // Full text: "1st Place - Faculty Name"
-        const fullText = `${placeLabel} - ${faculty}`;
+        const fullText = `${faculty}`;
 
         const facultySvg = `
-          <svg width="1000" height="750">
+          <svg width="1000" height="1200">
             <style>
               .faculty-text { 
                 fill: ${this.config.facultyColor}; 
                 font-size: ${this.config.facultyFontSize}px; 
-                font-family: Arial, sans-serif;
+                font-weight: bold;
+                font-weight: 650px;
+                font-family: inter;
               }
             </style>
             <text x="${position.x}" y="${
