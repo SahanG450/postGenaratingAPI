@@ -18,15 +18,15 @@ class PostGenerator {
     this.config = {
       sportPosition: { x: 250, y: 50 }, // Sport name position
       sportFontSize: 48,
-      sportColor: "#000000",
-
+      sportColor: "#0e1fe1ff",
+      // fit the positions
       facultyPositions: [
-        { x: 150, y: 340 }, // Position 1 (for faculty[0])
-        { x: 150, y: 420 }, // Position 2 (for faculty[1])
-        { x: 150, y: 500 }, // Position 3 (for faculty[2])
+        { x: 150, y: 340 },
+        { x: 250, y: 420 },
+        { x: 150, y: 500 },
       ],
       facultyFontSize: 32,
-      facultyColor: "#FFFFFF",
+      facultyColor: "#b30808ff",
 
       ...config,
     };
@@ -38,7 +38,36 @@ class PostGenerator {
   }
 
   /**
-   * Generate post from template
+   * Generate post buffer only (no save, no upload)
+   * @param {string} sport - Sport name
+   * @param {Array<string>} faculties - Array of faculty names [faculty1, faculty2, faculty3]
+   * @returns {Promise<Buffer>} PNG image buffer
+   */
+
+  async generatePostBuffer(sport, faculties) {
+    try {
+      // Validate input
+      if (!sport || !Array.isArray(faculties) || faculties.length === 0) {
+        throw new Error(
+          "Invalid input: sport and faculties array are required"
+        );
+      }
+
+      // Create SVG overlays for text
+      const svgOverlays = this.createTextOverlays(sport, faculties);
+
+      // Process template with overlays
+      const processedImage = await this.processTemplate(svgOverlays);
+
+      return processedImage;
+    } catch (error) {
+      console.error("❌ Error generating post:", error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate post from template (with save and upload)
    * @param {string} sport - Sport name
    * @param {Array<string>} faculties - Array of faculty names [faculty1, faculty2, faculty3]
    * @returns {Promise<Object>} Generated post info
@@ -52,8 +81,8 @@ class PostGenerator {
         );
       }
 
-      console.log(`\n🎨 Generating post for sport: ${sport}`);
-      console.log(`📋 Faculties (${faculties.length}):`, faculties);
+      console.log(`\n Generating post for sport: ${sport}`);
+      console.log(` Faculties (${faculties.length}):`, faculties);
 
       // Create SVG overlays for text
       const svgOverlays = this.createTextOverlays(sport, faculties);
@@ -68,16 +97,18 @@ class PostGenerator {
 
       // Save locally
       await this.savePost(filepath, processedImage, sport, faculties);
-      console.log(`✅ Post saved locally: ${filename}`);
 
-      // Send to server
-      const serverResponse = await this.sendToServer(
-        processedImage,
-        sport,
-        faculties,
-        filename
-      );
-      console.log("✅ Post sent to server successfully");
+      // Send to server (only if serverUrl is provided)
+      let serverResponse = null;
+      if (this.serverUrl) {
+        serverResponse = await this.sendToServer(
+          processedImage,
+          sport,
+          faculties,
+          filename
+        );
+        console.log("✅ Post sent to server successfully");
+      }
 
       return {
         success: true,
@@ -94,10 +125,11 @@ class PostGenerator {
   }
 
   /**
-   * Create SVG text overlays for sport and faculties
+   * Create SVG text overlays for sport and place rankings
    */
   createTextOverlays(sport, faculties) {
     const overlays = [];
+    const placeLabels = ["1st Place", "2nd Place", "3rd Place"];
 
     // Add sport name overlay
     const sportSvg = `
@@ -122,10 +154,15 @@ class PostGenerator {
       left: 0,
     });
 
-    // Add faculty name overlays based on array index
+    // Add place rankings with faculty names (1st Place - Faculty Name)
     faculties.forEach((faculty, index) => {
       if (index < this.config.facultyPositions.length) {
         const position = this.config.facultyPositions[index];
+        const placeLabel = placeLabels[index] || `${index + 1}th Place`;
+
+        // Full text: "1st Place - Faculty Name"
+        const fullText = `${placeLabel} - ${faculty}`;
+
         const facultySvg = `
           <svg width="1000" height="750">
             <style>
@@ -137,7 +174,7 @@ class PostGenerator {
             </style>
             <text x="${position.x}" y="${
           position.y
-        }" class="faculty-text">${this.escapeXml(faculty)}</text>
+        }" class="faculty-text">${this.escapeXml(fullText)}</text>
           </svg>
         `;
 

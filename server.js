@@ -17,28 +17,9 @@ app.use((req, res, next) => {
 
 // Initialize generator (no server URL needed since we're just generating)
 const generator = new PostGenerator(null);
-
-/**
- * POST /api/generate
- * Generate post and return directly to client
- *
- * Request body:
- * {
- *   "sport": "Football",
- *   "faculties": ["Engineering", "Medical", "Arts"]
- * }
- *
- * Response:
- * {
- *   "success": true,
- *   "imageBase64": "data:image/png;base64,..."
- * }
- */
 app.post("/api/generate", async (req, res) => {
   try {
     const { sport, faculties } = req.body;
-
-    // Validate input
     if (!sport || !Array.isArray(faculties) || faculties.length === 0) {
       return res.status(400).json({
         success: false,
@@ -85,16 +66,7 @@ app.get("/health", (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-  console.log(
-    `📡 Generate endpoint: POST http://localhost:${PORT}/api/generate`
-  );
-  console.log(`❤️  Health check: http://localhost:${PORT}/health\n`);
-  console.log(`Example request:`);
-  console.log(`  POST /api/generate`);
-  console.log(
-    `  Body: { "sport": "Football", "faculties": ["Eng", "Med", "Arts"] }\n`
-  );
+  console.log(`\n Server running on http://localhost:${PORT}`);
 });
 
 module.exports = app;
