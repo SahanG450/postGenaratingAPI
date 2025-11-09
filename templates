@@ -1,0 +1,25 @@
+post-generator/
+├── src/
+│   ├── controllers/
+│   │   └── postController.js
+│   ├── middlewares/
+│   │   └── errorHandler.js
+│   ├── models/
+│   │   └── postModel.js
+│   ├── routes/
+│   │   └── postRoutes.js
+│   ├── services/
+│   │   └── postService.js
+│   ├── templates/
+│   │   └── post_template.png
+│   ├── generated/
+│   ├── server.js
+│   └── postGenerator.js
+├── tests/
+│   └── postGenerator.test.js
+├── .env
+├── .gitignore
+├── package.json
+├── package-lock.json
+├── README.md
+└── QUICKSTART.md
